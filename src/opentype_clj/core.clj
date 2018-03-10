@@ -66,8 +66,12 @@
           path-data)))))
 
 (defn- demo []
-  (get-path (load-font "fonts/Roboto-Black.ttf")
-            "Hello World"
-            0
-            150
-            72))
+  (spit "demo.svg" (str "<svg width=\"400\" height=\"400\" xmlns=\"http://www.w3.org/2000/svg\">\n"
+                        "<path transform=\"translate(0, 0)\" fill=\"fill\" stroke=\"black\" d=\""
+                        (get-path (load-font "fonts/Roboto-Black.ttf")
+                                  "Hello World"
+                                  0
+                                  150
+                                  72)
+                        "\" />\n"
+                        "</svg>")))

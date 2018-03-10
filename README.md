@@ -6,7 +6,9 @@ Work in progress.
 
 ## Usage
 
-FIXME
+```clojure
+(load-font "fonts/Roboto-Black.ttf")
+```
 
 ## License
 

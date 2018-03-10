@@ -18,19 +18,19 @@
           (BufferedInputStream.)))
 
 (defonce ^:private rhino
-  (same-thread
-    (fn []
-      (let [context (doto (Context/enter)
-                      (.setLanguageVersion Context/VERSION_ES6))
-            scope (.initStandardObjects context)
-            eval-str (fn [s] (.evaluateString context scope s "<cmd>" 1 nil))]
-        (eval-str (slurp (filepath->stream "jvm-npm.js")))
-        (eval-str "var opentype = require('./resources/opentype.js')") ; TODO how to deal with this when classpath resource?
-        (eval-str "var b64 = require('./resources/base64-arraybuffer.js')")
-        (eval-str "function parseFont(payload) { return opentype.parse(b64.decode(payload)); }")
-        {:context   context
-         :scope     scope
-         :parsefont (.get scope "parseFont")}))))
+         (same-thread
+           (fn []
+             (let [context (doto (Context/enter)
+                             (.setLanguageVersion Context/VERSION_ES6))
+                   scope (.initStandardObjects context)
+                   eval-str (fn [s] (.evaluateString context scope s "<cmd>" 1 nil))]
+               (eval-str (slurp (filepath->stream "jvm-npm.js")))
+               (eval-str "var opentype = require('./resources/opentype.js')") ; TODO how to deal with this when classpath resource?
+               (eval-str "var b64 = require('./resources/base64-arraybuffer.js')")
+               (eval-str "function parseFont(payload) { return opentype.parse(b64.decode(payload)); }")
+               {:context   context
+                :scope     scope
+                :parsefont (.get scope "parseFont")}))))
 
 (defn load-font
   "Loads the font given by `filepath`.
@@ -50,4 +50,24 @@
               fullnames (vals (get names "fullName"))]
           (with-meta {:fullname (first fullnames)
                       :filepath filepath}
-                     {:font font}))))))
+                     {::font font}))))))
+
+(defn get-path
+  "Get path of `text` for `font` at `x`, `y` (baseline) with font `size`."
+  [font text x y size]
+  (let [font (::font (meta font))]
+    (assert (some? font) "Missing font")
+    (same-thread
+      (fn []
+        (let [get-path (NativeObject/getProperty font "getPath")
+              path (.call get-path (:context rhino) (:scope rhino) font (object-array [text x y size]))
+              to-path-data-fn (NativeObject/getProperty path "toPathData")
+              path-data (.call to-path-data-fn (:context rhino) (:scope rhino) path (object-array []))]
+          path-data)))))
+
+(defn- demo []
+  (get-path (load-font "fonts/Roboto-Black.ttf")
+            "Hello World"
+            0
+            150
+            72))

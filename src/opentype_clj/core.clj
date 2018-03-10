@@ -48,8 +48,11 @@
               font (.call (:parsefont rhino) (:context rhino) (:scope rhino) (:scope rhino) (object-array [font-b64]))
               names (NativeObject/getProperty font "names")
               fullnames (vals (get names "fullName"))]
-          (with-meta {:fullname (first fullnames)
-                      :filepath filepath}
+          ;(println "font-properties:" (vec (sort (NativeObject/getPropertyIds font))))
+          (with-meta {:fullname   (first fullnames)
+                      :unitsPerEm (NativeObject/getProperty font "unitsPerEm")
+                      :ascender (NativeObject/getProperty font "ascender")
+                      :descender (NativeObject/getProperty font "descender")}
                      {::font font}))))))
 
 (defn get-path

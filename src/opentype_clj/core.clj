@@ -49,30 +49,35 @@
               names (NativeObject/getProperty font "names")
               fullnames (vals (get names "fullName"))]
           ;(println "font-properties:" (vec (sort (NativeObject/getPropertyIds font))))
-          (with-meta {:fullname   (first fullnames)
-                      :unitsPerEm (NativeObject/getProperty font "unitsPerEm")
-                      :ascender (NativeObject/getProperty font "ascender")
-                      :descender (NativeObject/getProperty font "descender")}
-                     {::font font}))))))
+          {:name       (first (sort fullnames))
+           :unitsPerEm (NativeObject/getProperty font "unitsPerEm")
+           :ascender   (NativeObject/getProperty font "ascender")
+           :descender  (NativeObject/getProperty font "descender")
+           :font-obj   (fn [] font)})))))
 
 (defn get-path
   "Get path of `text` for `font` at `x`, `y` (baseline) with font `size`."
-  [font text x y size]
-  (let [font (::font (meta font))]
-    (assert (some? font) "Missing font")
-    (same-thread
-      (fn []
-        (let [get-path (NativeObject/getProperty font "getPath")
-              path (.call get-path (:context rhino) (:scope rhino) font (object-array [text x y size]))
-              to-path-data-fn (NativeObject/getProperty path "toPathData")
-              path-data (.call to-path-data-fn (:context rhino) (:scope rhino) path (object-array []))]
-          path-data)))))
+  [{:keys [font-obj]} text x y size]
+  (assert (fn? font-obj) "Missing font")
+  (same-thread
+    #(.call (NativeObject/getProperty (font-obj) "getPath")
+            (:context rhino)
+            (:scope rhino)
+            (font-obj)
+            (object-array [text x y size]))))
+
+(defn- sample-font []
+  (load-font "fonts/Roboto-Black.ttf"))
+
+(defn sample-get-path []
+  (-> (sample-font)
+      (get-path "Hello, World!" 0 150 72)))
 
 (defn- demo []
   (spit "demo.svg" (str "<svg width=\"400\" height=\"400\" xmlns=\"http://www.w3.org/2000/svg\">\n"
-                        "<path transform=\"translate(0, 0)\" fill=\"fill\" stroke=\"black\" d=\""
+                        "<path transform=\"translate(0, 0)\" fill=\"black\" stroke=\"black\" d=\""
                         (get-path (load-font "fonts/Roboto-Black.ttf")
-                                  "Hello World"
+                                  "Hello, World!"
                                   0
                                   150
                                   72)

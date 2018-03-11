@@ -11,3 +11,6 @@ pom.xml.asc
 .hg/
 .idea/
 *.iml
+demo-usage/.nrepl-port
+demo-usage/.lein-*
+demo-usage/target

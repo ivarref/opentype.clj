@@ -93,7 +93,7 @@
 (defn- demo []
   (spit "demo.svg" (str "<svg width=\"400\" height=\"400\" xmlns=\"http://www.w3.org/2000/svg\">\n"
                         "<path transform=\"translate(0, 0)\" fill=\"black\" stroke=\"black\" d=\""
-                        (get-path (load-font "fonts/Roboto-Black.ttf")
+                        (get-path (sample-font)
                                   "Hello, World!"
                                   0
                                   150

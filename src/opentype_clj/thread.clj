@@ -6,20 +6,23 @@
 (defonce ^:private output (async/chan))
 (defonce ^:private exception (async/chan))
 
-(defn- js-loop []
-  (async/thread (while true
-                  (let [f (async/<!! input)]
-                    (try
-                      (let [v (f)]
-                        (async/>!! output (if (nil? v) ::nil v)))
-                      (catch Exception e
-                        (println "error in js-loop ..." (.getMessage e))
-                        (async/>!! exception e)))))))
+(defn- js-loop-body []
+  (let [f (async/<!! input)]
+    (try
+      ;(println "thread is" (.getName (Thread/currentThread)))
+      (let [v (f)]
+        (async/>!! output (if (nil? v) ::nil v)))
+      (catch Exception e
+        (println "error in js-loop ..." (.getMessage e))
+        (async/>!! exception e)))))
 
-(defonce ^:private js-loop-thread (js-loop))
+(defonce ^:private js-looper
+         (async/thread
+           (while true
+             (js-loop-body))))
 
 (defn same-thread [f]
-  "Executes the function `f` inside a single, fixed thread."
+  "Executes `f` inside a single, fixed thread."
   (async/>!! input f)
   (let [[result ch] (async/alts!! [output exception])]
     (cond (= ch exception) (throw result)

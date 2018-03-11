@@ -83,6 +83,12 @@
             (font-obj)
             (object-array [text x y size]))))
 
+(defn string->glyphs
+  [{:keys [font-obj]} s]
+  (assert (fn? font-obj) "Missing font")
+  (same-thread
+    #(NativeObject/getProperty (font-obj) "stringToGlyphs")))
+
 (defn- sample-font []
   (load-font "fonts/Roboto-Black.ttf"))
 

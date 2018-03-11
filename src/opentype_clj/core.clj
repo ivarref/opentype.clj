@@ -83,11 +83,32 @@
             (font-obj)
             (object-array [text x y size]))))
 
+; Both string->glyphs and char->glyph breaks with exception
+; RuntimeException No Context associated with current Thread  org.mozilla.javascript.Context.getContext (Context.java:2442)
+
 (defn string->glyphs
   [{:keys [font-obj]} s]
   (assert (fn? font-obj) "Missing font")
+  (println "s is" s)
   (same-thread
-    #(NativeObject/getProperty (font-obj) "stringToGlyphs")))
+    #(do
+       ;(println (type (NativeObject/getProperty (font-obj) "stringToGlyphs")))
+       (.call
+         (NativeObject/getProperty (font-obj) "stringToGlyphs") ;org.mozilla.javascript.InterpretedFunction
+         (:context rhino)
+         (:scope rhino)
+         (font-obj)
+         (object-array [s])))))
+
+(defn char->glyph
+  [{:keys [font-obj]} s]
+  (assert (fn? font-obj) "Missing font")
+  (same-thread
+    #(.call (NativeObject/getProperty (font-obj) "charToGlyph")
+            (:context rhino)
+            (:scope rhino)
+            (font-obj)
+            (object-array [s]))))
 
 (defn- sample-font []
   (load-font "fonts/Roboto-Black.ttf"))

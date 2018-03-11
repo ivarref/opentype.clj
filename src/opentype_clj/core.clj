@@ -3,7 +3,7 @@
             [opentype-clj.thread :refer [same-thread]]
             [byte-streams :as bs]
             [clojure.java.io :as io])
-  (:import [org.mozilla.javascript Context NativeObject]
+  (:import [org.mozilla.javascript Context NativeObject InterpretedFunction ScriptableObject]
            [java.io BufferedInputStream File]
            [clojure.lang RT]))
 
@@ -62,7 +62,7 @@
                            (bs/to-byte-array)
                            (base64/encode-bytes)
                            (String.))
-              font (.call (:parsefont rhino) (:context rhino) (:scope rhino) (:scope rhino) (object-array [font-b64]))
+              ^ScriptableObject font (.call (:parsefont rhino) (:context rhino) (:scope rhino) (:scope rhino) (object-array [font-b64]))
               names (NativeObject/getProperty font "names")
               fullnames (vals (get names "fullName"))]
           ;(println "font-properties:" (vec (sort (NativeObject/getPropertyIds font))))
@@ -72,43 +72,63 @@
            :descender  (NativeObject/getProperty font "descender")
            :font-obj   (fn [] font)})))))
 
+(defn- ^InterpretedFunction get-fn
+  [^ScriptableObject obj ^String fn-name]
+  (NativeObject/getProperty obj fn-name))
+
+(defn call [obj fn-name args]
+  (.call (get-fn obj fn-name)
+         (:context rhino)
+         (:scope rhino)
+         obj
+         (object-array args)))
+
 (defn get-path
   "Get path of `text` for `font` at `x`, `y` (baseline) with font `size`."
   [{:keys [font-obj]} text x y size]
   (assert (fn? font-obj) "Missing font")
-  (same-thread
-    #(.call (NativeObject/getProperty (font-obj) "getPath")
-            (:context rhino)
-            (:scope rhino)
-            (font-obj)
-            (object-array [text x y size]))))
+  (same-thread #(call (font-obj) "getPath" [text x y size])))
 
-; Both string->glyphs and char->glyph breaks with exception
-; RuntimeException No Context associated with current Thread  org.mozilla.javascript.Context.getContext (Context.java:2442)
+(defn- glyph->clj
+  [font ^ScriptableObject glyph]
+  {:name         (NativeObject/getProperty glyph "name")
+   :font         font
+   :unicode      (NativeObject/getProperty glyph "unicode")
+   :unicodes     (vec (NativeObject/getProperty glyph "unicodes"))
+   :index        (int (NativeObject/getProperty glyph "index"))
+   :advanceWidth (NativeObject/getProperty glyph "advanceWidth")
+   :xMin         (NativeObject/getProperty glyph "xMin")
+   :yMin         (NativeObject/getProperty glyph "yMin")
+   :xMax         (NativeObject/getProperty glyph "xMax")
+   :yMax         (NativeObject/getProperty glyph "yMax")
+   :path         (NativeObject/getProperty glyph "path")})
 
 (defn string->glyphs
-  [{:keys [font-obj]} s]
+  [{:keys [font-obj] :as font} s]
   (assert (fn? font-obj) "Missing font")
-  (println "s is" s)
   (same-thread
-    #(do
-       ;(println (type (NativeObject/getProperty (font-obj) "stringToGlyphs")))
-       (.call
-         (NativeObject/getProperty (font-obj) "stringToGlyphs") ;org.mozilla.javascript.InterpretedFunction
-         (:context rhino)
-         (:scope rhino)
-         (font-obj)
-         (object-array [s])))))
+    #(let [glyphs (call (font-obj) "stringToGlyphs" [s])]
+       (mapv (partial glyph->clj font) (seq glyphs)))))
 
 (defn char->glyph
-  [{:keys [font-obj]} s]
+  [font s]
+  (first (string->glyphs font s)))
+
+(defn get-advance-width
+  "Returns the advance width of a text.
+
+  This is something different than Path.getBoundingBox() as for example a suffixed whitespace increases the advancewidth
+  but not the bounding box or an overhanging letter like a calligraphic 'f' might have a quite larger bounding box than
+  its advance width.
+
+  This corresponds to canvas2dContext.measureText(text).width
+
+  fontSize: Size of the text in pixels.
+
+  options: Not implemented."
+  [{:keys [font-obj]} text font-size]
   (assert (fn? font-obj) "Missing font")
-  (same-thread
-    #(.call (NativeObject/getProperty (font-obj) "charToGlyph")
-            (:context rhino)
-            (:scope rhino)
-            (font-obj)
-            (object-array [s]))))
+  (same-thread #(call (font-obj) "getAdvanceWidth" [text font-size])))
 
 (defn- sample-font []
   (load-font "fonts/Roboto-Black.ttf"))

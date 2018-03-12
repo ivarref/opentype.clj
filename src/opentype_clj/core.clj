@@ -7,6 +7,9 @@
            [java.io BufferedInputStream File]
            [clojure.lang RT]))
 
+(defrecord Font [name units-per-em ascender descender font-obj])
+(defrecord Glyph [name font unicode unicodes index advance-width x-min y-min x-max y-max path glyph-obj])
+
 (defn- filepath->stream
   "Returns a buffered stream of filepath, either using classpath or file from disk.
   Returns nil if filepath cannot be found."
@@ -66,11 +69,12 @@
               names (NativeObject/getProperty font "names")
               fullnames (vals (get names "fullName"))]
           ;(println "font-properties:" (vec (sort (NativeObject/getPropertyIds font))))
-          {:name       (first (sort fullnames))
-           :unitsPerEm (NativeObject/getProperty font "unitsPerEm")
-           :ascender   (NativeObject/getProperty font "ascender")
-           :descender  (NativeObject/getProperty font "descender")
-           :font-obj   (fn [] font)})))))
+          (map->Font
+            {:name         (first (sort fullnames))
+             :units-per-em (NativeObject/getProperty font "unitsPerEm")
+             :ascender     (NativeObject/getProperty font "ascender")
+             :descender    (NativeObject/getProperty font "descender")
+             :font-obj     (fn [] font)}))))))
 
 (defn- ^InterpretedFunction get-fn
   [^ScriptableObject obj ^String fn-name]
@@ -85,33 +89,34 @@
 
 (defn get-path
   "Get path of `text` for `font` at `x`, `y` (baseline) with font `size`."
-  [{:keys [font-obj]} text x y size]
-  (assert (fn? font-obj) "Missing font")
+  [^Font {:keys [font-obj]} text x y size]
   (same-thread #(call (font-obj) "getPath" [text x y size])))
 
 (defn- glyph->clj
-  [font ^ScriptableObject glyph]
-  {:name         (NativeObject/getProperty glyph "name")
-   :font         font
-   :unicode      (NativeObject/getProperty glyph "unicode")
-   :unicodes     (vec (NativeObject/getProperty glyph "unicodes"))
-   :index        (int (NativeObject/getProperty glyph "index"))
-   :advanceWidth (NativeObject/getProperty glyph "advanceWidth")
-   :xMin         (NativeObject/getProperty glyph "xMin")
-   :yMin         (NativeObject/getProperty glyph "yMin")
-   :xMax         (NativeObject/getProperty glyph "xMax")
-   :yMax         (NativeObject/getProperty glyph "yMax")
-   :path         (NativeObject/getProperty glyph "path")})
+  [^Font font ^ScriptableObject glyph]
+  (map->Glyph
+    {:name          (NativeObject/getProperty glyph "name")
+     :font          font
+     :unicode       (NativeObject/getProperty glyph "unicode")
+     :unicodes      (vec (NativeObject/getProperty glyph "unicodes"))
+     :index         (int (NativeObject/getProperty glyph "index"))
+     :advance-width (NativeObject/getProperty glyph "advanceWidth")
+     :x-min         (NativeObject/getProperty glyph "xMin")
+     :y-min         (NativeObject/getProperty glyph "yMin")
+     :x-max         (NativeObject/getProperty glyph "xMax")
+     :y-max         (NativeObject/getProperty glyph "yMax")
+     :path          (NativeObject/getProperty glyph "path")
+     :glyph-obj     (fn [] glyph)}))
 
 (defn string->glyphs
-  [{:keys [font-obj] :as font} s]
+  [^Font {:keys [font-obj] :as font} s]
   (assert (fn? font-obj) "Missing font")
   (same-thread
     #(let [glyphs (call (font-obj) "stringToGlyphs" [s])]
        (mapv (partial glyph->clj font) (seq glyphs)))))
 
 (defn char->glyph
-  [font s]
+  [^Font font s]
   (first (string->glyphs font s)))
 
 (defn get-advance-width
@@ -126,9 +131,18 @@
   fontSize: Size of the text in pixels.
 
   options: Not implemented."
-  [{:keys [font-obj]} text font-size]
+  [^Font {:keys [font-obj]} ^String text font-size]
   (assert (fn? font-obj) "Missing font")
   (same-thread #(call (font-obj) "getAdvanceWidth" [text font-size])))
+
+(defn get-kerning-value
+  "Retrieve the value of the kerning pair between the left glyph
+  and the right glyph. If no kerning pair is found, return 0.
+
+  The kerning value gets added to the advance width when calculating
+  the spacing between glyphs."
+  [^Font {:keys [font-obj] :as font} ^Glyph left ^Glyph right]
+  (same-thread #(call (font-obj) "getKerningValue" [((:glyph-obj left)) ((:glyph-obj right))])))
 
 (defn- sample-font []
   (load-font "fonts/Roboto-Black.ttf"))
@@ -136,6 +150,10 @@
 (defn sample-get-path []
   (-> (sample-font)
       (get-path "Hello, World!" 0 150 72)))
+
+(defn sample-kerning-value []
+  (let [font (sample-font)]
+    (get-kerning-value font (char->glyph font "T") (char->glyph font "a"))))
 
 (defn- demo []
   (spit "demo.svg" (str "<svg width=\"400\" height=\"400\" xmlns=\"http://www.w3.org/2000/svg\">\n"

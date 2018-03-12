@@ -16,7 +16,8 @@
 
 (deftest get-advance-width-test
   (is (= 46 (Math/round (get-advance-width font "X" 72))))
-  (is (= 45 (Math/round (get-advance-width font "Y" 72)))))
+  (is (= 45 (Math/round (get-advance-width font "Y" 72))))
+  (is (= 63 (Math/round (get-advance-width font "Y " 72)))))
 
 (deftest get-kerning-value-test
   (is (= -168 (get-kerning-value font (c->glyph "T") (c->glyph "a"))))

@@ -2,7 +2,7 @@
 
 A Clojure (JVM) wrapper for [opentype.js](https://opentype.js.org/).
 
-Currently bundles `opentype.js 0.7.0`. Work in progress.
+Currently bundles `opentype.js 0.8.0`. Work in progress.
 
 ## Usage
 

@@ -70,9 +70,9 @@
 
   The kerning value gets added to the advance width when calculating
   the spacing between glyphs."
-  [^Font {:keys [font-obj] :as font} ^Glyph left ^Glyph right]
+  [^Font {:keys [font-obj]} ^Glyph left ^Glyph right]
   (assert (fn? font-obj) "Missing font")
-  (same-thread #(call (font-obj) "getKerningValue" [((:glyph-obj left)) ((:glyph-obj right))])))
+  (same-thread #(call (font-obj) "getKerningValue" [(:index left) (:index right)])))
 
 (defn glyph->path
   "Get a scaled glyph Path object we can draw on a drawing context.

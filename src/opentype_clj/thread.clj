@@ -9,7 +9,6 @@
 (defn- js-loop-body []
   (let [f (async/<!! input)]
     (try
-      ;(println "thread is" (.getName (Thread/currentThread)))
       (let [v (f)]
         (async/>!! output (if (nil? v) ::nil v)))
       (catch Exception e

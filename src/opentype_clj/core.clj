@@ -1,27 +1,11 @@
 (ns opentype-clj.core
-  (:require [base64-clj.core :as base64]
-            [opentype-clj.thread :refer [same-thread]]
-            [opentype-clj.utils :refer [filepath->stream]]
-            [opentype-clj.bootstrap :as bootstrap]
-            [byte-streams :as bs])
-  (:import [org.mozilla.javascript NativeObject InterpretedFunction ScriptableObject]))
+  (:require [opentype-clj.thread :refer [same-thread]]
+            [opentype-clj.bootstrap :refer [call] :as bootstrap])
+  (:import [org.mozilla.javascript NativeObject ScriptableObject]))
 
 (defrecord Font [name units-per-em ascender descender font-obj])
 (defrecord Glyph [name font unicode unicodes index advance-width x-min y-min x-max y-max path glyph-obj])
 (defrecord BoundingBox [x1 y1 x2 y2])
-
-(defonce ^:private rhino (same-thread bootstrap/rhino))
-
-(defn- ^InterpretedFunction get-fn
-  [^ScriptableObject obj ^String fn-name]
-  (NativeObject/getProperty obj fn-name))
-
-(defn- call [obj ^String fn-name args]
-  (.call (get-fn obj fn-name)
-         (:context rhino)
-         (:scope rhino)
-         obj
-         (object-array args)))
 
 (defn load-font
   "Loads the font given by `filepath`.
@@ -29,23 +13,7 @@
 
   Returns the font, or nil if `filepath` was not found."
   [filepath]
-  (same-thread
-    (fn []
-      (when-let [stream (filepath->stream filepath)]
-        (let [font-b64 (-> stream
-                           (bs/to-byte-array)
-                           (base64/encode-bytes)
-                           (String.))
-              ^ScriptableObject font (.call (:parsefont rhino) (:context rhino) (:scope rhino) (:scope rhino) (object-array [font-b64]))
-              names (NativeObject/getProperty font "names")
-              fullnames (vals (get names "fullName"))]
-          ;(println "font-properties:" (vec (sort (NativeObject/getPropertyIds font))))
-          (map->Font
-            {:name         (first (sort fullnames))
-             :units-per-em (NativeObject/getProperty font "unitsPerEm")
-             :ascender     (NativeObject/getProperty font "ascender")
-             :descender    (NativeObject/getProperty font "descender")
-             :font-obj     (fn [] font)}))))))
+  (map->Font (bootstrap/load-font filepath)))
 
 (defn get-path
   "Get path of `text` for `font` at `x`, `y` (baseline) with font `size`."
@@ -113,6 +81,7 @@
   y: Vertical position of the baseline of the glyph.
   font-size: Font size in pixels."
   [^Glyph {:keys [glyph-obj]} x y font-size]
+  (assert (fn? glyph-obj) "Missing glyph")
   (same-thread #(call (glyph-obj) "getPath" [x y font-size])))
 
 (defn glyph->bounding-box
@@ -121,6 +90,7 @@
 
   If the glyph has no points (e.g. a space character), all coordinates will be zero."
   [^Glyph {:keys [glyph-obj]}]
+  (assert (fn? glyph-obj) "Missing glyph")
   (->> (same-thread #(call (glyph-obj) "getBoundingBox" []))
        (map (fn [[k v]] [(keyword k) v]))
        (into {})

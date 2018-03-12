@@ -54,6 +54,8 @@ Original license from `opentype.js`:
     COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Please also see [AUTHORS of opentype.js](https://github.com/nodebox/opentype.js/blob/master/AUTHORS.md).
     
 Copyright © 2018 Ivar Refsdal
 

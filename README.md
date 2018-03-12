@@ -7,7 +7,9 @@ Work in progress.
 ## Usage
 
 ```clojure
-(load-font "fonts/Roboto-Black.ttf")
+(use 'opentype-clj.core)
+(def my-font (load-font "fonts/Roboto-Black.ttf"))
+(get-path my-font "Hello World" 0 150 72)
 ```
 
 ## License

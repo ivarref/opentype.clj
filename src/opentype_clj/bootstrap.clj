@@ -30,7 +30,7 @@
         scope (.initStandardObjects context)
         eval-str (fn [s] (.evaluateString context scope s "<cmd>" 1 nil))]
     (eval-str (slurp (filepath->stream "jvm-npm.js")))
-    (with-resource->temp-file "opentype.js" #(eval-str (str "var opentype = require('" % "')")))
+    (with-resource->temp-file "opentype-v0.7.3.js" #(eval-str (str "var opentype = require('" % "')")))
     (with-resource->temp-file "base64-arraybuffer.js" #(eval-str (str "var b64 = require('" % "')")))
     (eval-str "function parseFont(payload) { return opentype.parse(b64.decode(payload)); }")
     {:context   context

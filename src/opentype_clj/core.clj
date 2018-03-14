@@ -13,7 +13,8 @@
 
   Returns the font, or nil if `filepath` was not found."
   [filepath]
-  (map->Font (bootstrap/load-font filepath)))
+  (some-> (bootstrap/load-font filepath)
+          (map->Font)))
 
 (defn get-path
   "Get path of `text` for `font` at `x`, `y` (baseline) with font `size`."

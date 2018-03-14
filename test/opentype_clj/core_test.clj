@@ -3,6 +3,9 @@
             [opentype-clj.core :refer :all]))
 
 (def font (load-font "fonts/Roboto-Black.ttf"))
+(is (some? font))
+
+(is (nil? (load-font "fonts/not-found.ttf")))
 
 (def c->glyph (partial char->glyph font))
 

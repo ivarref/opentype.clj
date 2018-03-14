@@ -41,12 +41,14 @@
 (defn string->glyphs
   [^Font {:keys [font-obj] :as font} s]
   (assert (fn? font-obj) "Missing font")
+  (assert (string? s) "string->glyphs: s must be of type string")
   (same-thread
     #(let [glyphs (call (font-obj) "stringToGlyphs" [s])]
        (mapv (partial js->Glyph font) (seq glyphs)))))
 
 (defn char->glyph
   [^Font font s]
+  (assert (= 1 (count s)) "char->glyph: Expects exactly one character")
   (first (string->glyphs font s)))
 
 (defn get-advance-width
@@ -58,7 +60,7 @@
 
   This corresponds to canvas2dContext.measureText(text).width
 
-  fontSize: Size of the text in pixels.
+  font-size: Size of the text in pixels.
 
   options: Not implemented."
   [^Font {:keys [font-obj]} ^String text font-size]

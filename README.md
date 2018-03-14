@@ -1,6 +1,6 @@
 # opentype.clj
 
-A Clojure (JVM) wrapper for [opentype.js](https://opentype.js.org/). Bundles `opentype.js 0.7.3`. Work in progress.
+A Clojure (JVM) wrapper for [opentype.js](https://opentype.js.org/) v0.7.3. Work in progress.
 
 No public release exists yet!
 

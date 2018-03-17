@@ -3,7 +3,7 @@
     [opentype-clj.bootstrap :refer [call] :as bootstrap])
   (:import [org.mozilla.javascript NativeObject ScriptableObject]))
 
-(defrecord Font [name units-per-em ascender descender font-obj])
+(defrecord Font [name resource units-per-em ascender descender font-obj])
 (defrecord Glyph [name font unicode unicodes index advance-width x-min y-min x-max y-max path glyph-obj])
 (defrecord BoundingBox [x1 y1 x2 y2])
 

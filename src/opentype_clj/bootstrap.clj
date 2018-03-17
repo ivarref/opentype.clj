@@ -67,6 +67,7 @@
               fullnames (vals (get names "fullName"))]
           ;(println "font-properties:" (vec (sort (NativeObject/getPropertyIds font))))
           {:name         (first (sort fullnames))
+           :resource     :stream
            :units-per-em (NativeObject/getProperty font "unitsPerEm")
            :ascender     (NativeObject/getProperty font "ascender")
            :descender    (NativeObject/getProperty font "descender")
@@ -78,4 +79,5 @@
 
   Returns the font, or nil if `filepath` was not found."
   [filepath]
-  (load-font-stream (filepath->stream filepath)))
+  (some-> (load-font-stream (filepath->stream filepath))
+          (assoc :resource filepath)))

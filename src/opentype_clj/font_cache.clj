@@ -25,6 +25,8 @@
           nil
           (font-name->candidates font-name)))
 
+(def ^:dynamic *print-warning* true)
+
 (defn cached-font-name->font
   "Returns font by font-name from cache, or nil if not found.
 
@@ -39,7 +41,7 @@
     (if-let [font (wrapper/load-font (font-name->resource-name font-name))]
       (do (swap! cache (fn [old] (assoc old font-name font)))
           (with-meta font {:cached false}))
-      (do (println "Warning: Font" (str "'" font-name "'") "not found")
+      (do (when *print-warning* (println "Warning: Font" (str "'" font-name "'") "not found"))
           nil))))
 
 (def font-name->font

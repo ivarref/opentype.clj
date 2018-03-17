@@ -45,7 +45,7 @@ A simple API over [opentype.js](https://opentype.js.org/) for Clojure. Runs on t
 ![bounding-box.svg](bounding-box.png)
 
 
-### Determining font from a string
+### Determining font resource from a string
 
 Most functions in `opentype-clj.core` takes a string font name as an input parameter.
 This string is matched to a file or classpath resource by trying `font name`.`[|ttf|woff|otf]`

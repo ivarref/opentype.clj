@@ -67,15 +67,16 @@
   (assert (fn? font-obj) "Missing font")
   (same-thread #(call (font-obj) "getAdvanceWidth" [text font-size])))
 
-(defn get-kerning-value
-  "Retrieve the value of the kerning pair between the left glyph
-  and the right glyph. If no kerning pair is found, return 0.
-
-  The kerning value gets added to the advance width when calculating
-  the spacing between glyphs."
-  [^Font {:keys [font-obj]} ^Glyph left ^Glyph right]
-  (assert (fn? font-obj) "Missing font")
-  (same-thread #(call (font-obj) "getKerningValue" [(:index left) (:index right)])))
+; Disable get-kerning-value until 0.8.1 or so
+;(defn get-kerning-value
+;  "Retrieve the value of the kerning pair between the left glyph
+;  and the right glyph. If no kerning pair is found, return 0.
+;
+;  The kerning value gets added to the advance width when calculating
+;  the spacing between glyphs."
+;  [^Font {:keys [font-obj]} ^Glyph left ^Glyph right]
+;  (assert (fn? font-obj) "Missing font")
+;  (same-thread #(call (font-obj) "getKerningValue" [(:index left) (:index right)])))
 
 (defn glyph->path
   "Get a scaled glyph Path object we can draw on a drawing context.

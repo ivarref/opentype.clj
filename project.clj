@@ -7,6 +7,8 @@
                  [org.clojure/core.async "0.3.442"]
                  [org.mozilla/rhino "1.7.7.1"]
                  [base64-clj "0.1.1"]
-                 [venantius/pyro "0.1.2"]
-                 [byte-streams "0.2.4-alpha4"]]
+                 [byte-streams "0.2.4-alpha4"]
+                 [venantius/pyro "0.1.2" :scope "test"]
+                 [org.apache.xmlgraphics/batik-rasterizer "1.9.1" :scope "test"]
+                 [org.apache.xmlgraphics/batik-codec "1.9.1" :scope "test"]]
   :profiles {:dev {:resource-paths ["test-resources"]}})

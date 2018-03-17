@@ -2,15 +2,15 @@
   (:require [opentype-clj.wrapper :as wrapper]
             [opentype-clj.font-cache :as font-cache]))
 
-(defn font-name->font
+(defn font
   "Returns the font for font-name, or nil if the font cannot be found."
   [font-name]
   (font-cache/font-name->font font-name))
 
 (defn- font-name->font-or-throw
   [font-name]
-  (if-let [font (font-name->font font-name)]
-    font
+  (if-let [font-obj (font font-name)]
+    font-obj
     (throw (ex-info "Could not find font-name" {:font-name font-name}))))
 
 (defn text

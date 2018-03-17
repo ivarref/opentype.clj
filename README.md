@@ -1,7 +1,6 @@
 # opentype.clj
 
-A simple API over [opentype.js](https://opentype.js.org/). Runs on the JVM.
-
+A simple API over [opentype.js](https://opentype.js.org/) for Clojure. Runs on the JVM.
 
 ## Usage
 

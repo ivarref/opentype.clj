@@ -1,6 +1,6 @@
 # opentype.clj
 
-A simple API over [opentype.js](https://opentype.js.org/). 
+A simple API over [opentype.js](https://opentype.js.org/). Runs on the JVM.
 
 
 ## Usage

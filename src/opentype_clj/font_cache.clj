@@ -25,16 +25,22 @@
           nil
           (font-name->candidates font-name)))
 
-(def font-name->font
-  "Returns the font for font-name, or nil if the font cannot be found.
+(defn cached-font-name->font
+  "Returns font by font-name from cache, or nil if not found.
 
-  The font will be stored in the font-cache if found, avoiding expensive font loading."
-  (let [font-cache (atom {})]
-    (fn [font-name]
-      (if-let [font (get @font-cache font-name)]
-        font
-        (if-let [font (wrapper/load-font (font-name->resource-name font-name))]
-          (do (swap! font-cache (fn [old] (assoc old font-name font)))
-              font)
-          (do (println "Warning, font" (str "'" font-name "'") "not found")
-              nil))))))
+  If font-name is not found in the cache, it will be attempted loaded and the cache will be updated.
+
+  This function is only meant to be used internally (and by tests)."
+  [cache font-name]
+  (if-let [font (get @cache font-name)]
+    (with-meta font {:cached true})
+    (if-let [font (wrapper/load-font (font-name->resource-name font-name))]
+      (do (swap! cache (fn [old] (assoc old font-name font)))
+          (with-meta font {:cached false}))
+      (do (println "Warning, font" (str "'" font-name "'") "not found")
+          nil))))
+
+(def font-name->font
+  "Returns the font for font-name, or nil if the font cannot be found."
+  (let [cache (atom {})]
+    (fn [font-name] (cached-font-name->font cache font-name))))

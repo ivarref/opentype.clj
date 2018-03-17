@@ -33,7 +33,8 @@ A simple API over [opentype.js](https://opentype.js.org/). Runs on the JVM.
                "<path fill='black' stroke='none' d='" (:path-data txt) "' />\n"
                "<path fill='none' stroke='red' d='" (:bounding-box-path-data txt) "' />\n"
                "</svg>\n")]
-  (spit "bounding-box.svg" svg)); will produce the image below:
+  (spit "bounding-box.svg" svg))
+; will produce the image below:
 ```
 
 ![bounding-box.svg](bounding-box.png)

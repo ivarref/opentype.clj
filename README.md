@@ -1,6 +1,6 @@
 # opentype.clj
 
-A simple API over [opentype.js](https://opentype.js.org/) `v0.8.0`. 
+A simple API over [opentype.js](https://opentype.js.org/). 
 
 
 ## Usage
@@ -25,6 +25,10 @@ A simple API over [opentype.js](https://opentype.js.org/) `v0.8.0`.
                                                  "opentype_clj.bootstrap$load_font_stream$fn__15394$fn__15395@e6f99a3"]}
 
 ```
+
+### Details
+
+Uses `opentype.js v0.8.0`.
 
 ## License
 

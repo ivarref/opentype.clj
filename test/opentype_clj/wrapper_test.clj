@@ -1,6 +1,6 @@
-(ns opentype-clj.core-test
+(ns opentype-clj.wrapper-test
   (:require [clojure.test :refer :all]
-            [opentype-clj.core :refer :all]))
+            [opentype-clj.wrapper :refer :all]))
 
 (def font (load-font "fonts/Roboto-Black.ttf"))
 (is (some? font))
@@ -22,9 +22,9 @@
   (is (= 45 (Math/round (get-advance-width font "Y" 72))))
   (is (= 63 (Math/round (get-advance-width font "Y " 72)))))
 
-(deftest get-kerning-value-test
-  (is (= -168 (get-kerning-value font (c->glyph "T") (c->glyph "a"))))
-  (is (= -33 (get-kerning-value font (c->glyph "W") (c->glyph "a")))))
+;(deftest get-kerning-value-test
+;  (is (= -168 (get-kerning-value font (c->glyph "T") (c->glyph "a"))))
+;  (is (= -33 (get-kerning-value font (c->glyph "W") (c->glyph "a")))))
 
 (deftest get-path-test
   (is (some? (get-path font "Hello, World!" 0 150 72))))

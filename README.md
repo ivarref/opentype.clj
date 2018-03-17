@@ -4,6 +4,8 @@ A simple API over [opentype.js](https://opentype.js.org/) for Clojure. Runs on t
 
 ## Usage
 
+Add `[opentype-clj "0.0.3"]` to your dependency vector.
+
 ```clojure
 (use 'opentype-clj.core)
 

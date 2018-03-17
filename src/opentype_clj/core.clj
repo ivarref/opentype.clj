@@ -19,10 +19,19 @@
   ([font-name txt x y] (text font-name txt x y 72 2))
   ([font-name txt x y font-size] (text font-name txt x y font-size 2))
   ([font-name txt x y font-size decimals]
+   (assert (int? decimals) "decimals must be of type int")
+   (assert (or (zero? decimals) (pos-int? decimals)) "decimals must be greater or equal to zero")
    (let [font (font-name->font-or-throw font-name)
-         path (wrapper/get-path font txt x y font-size)]
+         path (wrapper/get-path font txt x y font-size)
+         bounding-box (wrapper/path->bounding-box path)
+         fmt (fn [num] (format (str "%." decimals "f ") num))]
      {:path-data    (wrapper/path->path-data path decimals)
-      :bounding-box (wrapper/path->bounding-box path)})))
+      :bounding-box bounding-box
+      :bounding-box-path-data (str "M" (fmt (:x1 bounding-box)) (fmt (:y1 bounding-box))
+                                   "H" (fmt (:x2 bounding-box))
+                                   "V" (fmt (:y2 bounding-box))
+                                   "H" (fmt (:x1 bounding-box))
+                                   "Z")})))
 
 (defn text->path-data
   ([font-name txt] (text->path-data font-name txt 0 0 72 2))
@@ -37,3 +46,10 @@
   ([font-name txt x y] (text->bounding-box font-name txt x y 72 2))
   ([font-name txt x y font-size] (text->bounding-box font-name txt x y font-size 2))
   ([font-name txt x y font-size decimals] (:bounding-box (text font-name txt x y font-size decimals))))
+
+(defn text->bounding-box-path-data
+  ([font-name txt] (text->bounding-box-path-data font-name txt 0 0 72 2))
+  ([font-name txt x] (text->bounding-box-path-data font-name txt x 0 72 2))
+  ([font-name txt x y] (text->bounding-box-path-data font-name txt x y 72 2))
+  ([font-name txt x y font-size] (text->bounding-box-path-data font-name txt x y font-size 2))
+  ([font-name txt x y font-size decimals] (:bounding-box-path-data (text font-name txt x y font-size decimals))))

@@ -17,10 +17,14 @@
           (map->Font)))
 
 (defn get-path
-  "Get path of `text` for `font` at `x`, `y` (baseline) with font `size`."
-  [^Font {:keys [font-obj]} text x y size]
+  "Get path of `text` for `font` at `x`, `y` (baseline) with `font-size`."
+  [^Font {:keys [font-obj]} text x y font-size]
   (assert (fn? font-obj) "Missing font")
-  (same-thread #(call (font-obj) "getPath" [text x y size])))
+  (assert (number? x) "x must be a number")
+  (assert (number? y) "y must be a number")
+  (assert (number? font-size) "font-size must be a number")
+  (assert (pos? font-size) "font-size must be a positive number")
+  (same-thread #(call (font-obj) "getPath" [text x y font-size])))
 
 (defn- js->Glyph
   [^Font font ^ScriptableObject glyph]

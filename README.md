@@ -14,6 +14,9 @@ A simple API over [opentype.js](https://opentype.js.org/). Runs on the JVM.
 (text->bounding-box "Roboto Black" "Hello, World!" 0 150 72)
 => #opentype_clj.wrapper.BoundingBox{:x1 3.8671875, :y1 96.0, :x2 413.40234375, :y2 163.78125}
 
+(text->bounding-box-path-data "Roboto Black" "Hello, World!" 0 150 72)
+=> "M3.87 96.00 H413.40 V163.78 H3.87 Z"
+
 (font "Roboto Black")
 => #opentype_clj.wrapper.Font{:name "Roboto Black",
                                :resource "fonts/Roboto-Black.ttf",
@@ -24,7 +27,17 @@ A simple API over [opentype.js](https://opentype.js.org/). Runs on the JVM.
                                                  0xe6f99a3
                                                  "opentype_clj.bootstrap$load_font_stream$fn__15394$fn__15395@e6f99a3"]}
 
+; a slightly more complex example:
+(let [txt (text "Roboto Black" "Hello, World!" 10 100 72)]
+    (spit "bounding-box.svg" (str "<svg width='450' height='150' xmlns='http://www.w3.org/2000/svg'>\n"
+                                  "<path fill='black' stroke='none' d='" (:path-data txt) "' />\n"
+                                  "<path fill='none' stroke='red' d='" (:bounding-box-path-data txt) "' />\n"
+                                  "</svg>\n")))
+; will produce the image below:
 ```
+
+![bounding-box.svg](bounding-box.png)
+
 
 ### Details
 

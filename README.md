@@ -64,7 +64,7 @@ as well as `font-name`.`[|ttf|woff|otf]`. So for example `Roboto Black` will hav
     "Roboto-Black.otf" "fonts/Roboto-Black.ttf" "fonts/Roboto-Black.woff" "fonts/Roboto-Black.otf"]
 ```
 
-The first match will be used. 
+The first successful match will be used. 
 In the case of this project, `Roboto Black` will ultimately resolve to `fonts/Roboto-Black.ttf`.
 
 ### Details

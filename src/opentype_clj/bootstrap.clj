@@ -50,15 +50,14 @@
          obj
          (object-array args)))
 
-(defn load-font
-  "Loads the font given by `filepath`.
-  `filepath` may be either a classpath resource or a file on disk.
+(defn load-font-stream
+  "Loads the font given by `stream`.
 
-  Returns the font, or nil if `filepath` was not found."
-  [filepath]
+  Returns the font, or nil if `stream` was nil."
+  [stream]
   (same-thread
     (fn []
-      (when-let [stream (filepath->stream filepath)]
+      (when (some? stream)
         (let [font-b64 (-> stream
                            (bs/to-byte-array)
                            (base64/encode-bytes)
@@ -72,3 +71,11 @@
            :ascender     (NativeObject/getProperty font "ascender")
            :descender    (NativeObject/getProperty font "descender")
            :font-obj     (fn [] font)})))))
+
+(defn load-font
+  "Loads the font given by `filepath`.
+  `filepath` may be either a classpath resource or a file on disk.
+
+  Returns the font, or nil if `filepath` was not found."
+  [filepath]
+  (load-font-stream (filepath->stream filepath)))

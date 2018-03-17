@@ -30,3 +30,10 @@
   ([font-name txt x y] (text->path-data font-name txt x y 72 2))
   ([font-name txt x y font-size] (text->path-data font-name txt x y font-size 2))
   ([font-name txt x y font-size decimals] (:path-data (text font-name txt x y font-size decimals))))
+
+(defn text->bounding-box
+  ([font-name txt] (text->bounding-box font-name txt 0 0 72 2))
+  ([font-name txt x] (text->bounding-box font-name txt x 0 72 2))
+  ([font-name txt x y] (text->bounding-box font-name txt x y 72 2))
+  ([font-name txt x y font-size] (text->bounding-box font-name txt x y font-size 2))
+  ([font-name txt x y font-size decimals] (:bounding-box (text font-name txt x y font-size decimals))))

@@ -3,7 +3,7 @@
             [opentype-clj.font-cache :refer :all]))
 
 (deftest font-name->candidates-test
-  (is (some #{"fonts/Roboto-Black.ttf"} (font-name->candidates "Roboto Black"))))
+  (is (some #{"fonts/Roboto-Black.ttf"} (font-name->candidate-resources "Roboto Black"))))
 
 (deftest font-cache-test
   (let [cache (atom {})]

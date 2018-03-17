@@ -2,9 +2,11 @@
 
 A simple API over [opentype.js](https://opentype.js.org/) for Clojure. Runs on the JVM.
 
-## Usage
+## Installation
 
 Add `[opentype-clj "0.0.3"]` to your dependency vector.
+
+## Usage
 
 ```clojure
 (use 'opentype-clj.core)

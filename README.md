@@ -19,13 +19,13 @@ A simple API over [opentype.js](https://opentype.js.org/). Runs on the JVM.
 
 (font "Roboto Black")
 => #opentype_clj.wrapper.Font{:name "Roboto Black",
-                               :resource "fonts/Roboto-Black.ttf",
-                               :units-per-em 2048,
-                               :ascender 1900,
-                               :descender -500,
-                               :font-obj #object[opentype_clj.bootstrap$load_font_stream$fn__15394$fn__15395
-                                                 0xe6f99a3
-                                                 "opentype_clj.bootstrap$load_font_stream$fn__15394$fn__15395@e6f99a3"]}
+                              :resource "fonts/Roboto-Black.ttf",
+                              :units-per-em 2048,
+                              :ascender 1900,
+                              :descender -500,
+                              :font-obj #object[opentype_clj.bootstrap$load_font_stream$fn__15394$fn__15395
+                                                0xe6f99a3
+                                                "opentype_clj.bootstrap$load_font_stream$fn__15394$fn__15395@e6f99a3"]}
 
 ; a slightly more complex example:
 (let [txt (text "Roboto Black" "Hello, World!" 10 100 72)

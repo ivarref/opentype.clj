@@ -24,9 +24,9 @@
      {:path-data    (wrapper/path->path-data path decimals)
       :bounding-box (wrapper/path->bounding-box path)})))
 
-;(defn text->path-data
-;  ([font-name txt] (text->path-data font-name txt 0 0 72 2))
-;  ([font-name txt x] (text->path-data font-name txt x 0 72 2))
-;  ([font-name txt x y] (text->path-data font-name txt x y 72 2))
-;  ([font-name txt x y font-size] (text->path-data font-name txt x y font-size 2))
-;  ([font-name txt x y font-size decimals] (:path-data (text font-name txt x y font-size decimals))))
+(defn text->path-data
+  ([font-name txt] (text->path-data font-name txt 0 0 72 2))
+  ([font-name txt x] (text->path-data font-name txt x 0 72 2))
+  ([font-name txt x y] (text->path-data font-name txt x y 72 2))
+  ([font-name txt x y font-size] (text->path-data font-name txt x y font-size 2))
+  ([font-name txt x y font-size decimals] (:path-data (text font-name txt x y font-size decimals))))

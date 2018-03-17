@@ -7,8 +7,9 @@
   "Returns a buffered stream of filepath, either using classpath or file from disk.
   Returns nil if filepath cannot be found."
   [filepath]
-  (some-> (or (.getResourceAsStream (RT/baseLoader) filepath)
-              (let [file (io/file filepath)]
-                (when (.exists file)
-                  (io/input-stream file))))
-          (BufferedInputStream.)))
+  (when filepath
+    (some-> (or (.getResourceAsStream (RT/baseLoader) filepath)
+                (let [file (io/file filepath)]
+                  (when (.exists file)
+                    (io/input-stream file))))
+            (BufferedInputStream.))))

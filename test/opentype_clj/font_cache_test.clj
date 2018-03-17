@@ -8,5 +8,6 @@
 (deftest font-cache-test
   (let [cache (atom {})]
     (is (some? (cached-font-name->font (atom {}) "Roboto Black")))
+    (is (nil? (cached-font-name->font (atom {}) "Roboto Blackxxxx")))
     (is (false? (-> (cached-font-name->font cache "Roboto Black") (meta) :cached)))
     (is (true? (-> (cached-font-name->font cache "Roboto Black") (meta) :cached)))))

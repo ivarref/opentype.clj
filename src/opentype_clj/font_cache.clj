@@ -32,12 +32,14 @@
 
   This function is only meant to be used internally (and by tests)."
   [cache font-name]
+  (assert (string? font-name) "font-name must be string")
+  (assert (not-empty font-name) "font-name must be not-empty")
   (if-let [font (get @cache font-name)]
     (with-meta font {:cached true})
     (if-let [font (wrapper/load-font (font-name->resource-name font-name))]
       (do (swap! cache (fn [old] (assoc old font-name font)))
           (with-meta font {:cached false}))
-      (do (println "Warning, font" (str "'" font-name "'") "not found")
+      (do (println "Warning: Font" (str "'" font-name "'") "not found")
           nil))))
 
 (def font-name->font

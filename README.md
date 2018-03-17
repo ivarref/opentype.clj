@@ -28,12 +28,12 @@ A simple API over [opentype.js](https://opentype.js.org/). Runs on the JVM.
                                                  "opentype_clj.bootstrap$load_font_stream$fn__15394$fn__15395@e6f99a3"]}
 
 ; a slightly more complex example:
-(let [txt (text "Roboto Black" "Hello, World!" 10 100 72)]
-    (spit "bounding-box.svg" (str "<svg width='450' height='150' xmlns='http://www.w3.org/2000/svg'>\n"
-                                  "<path fill='black' stroke='none' d='" (:path-data txt) "' />\n"
-                                  "<path fill='none' stroke='red' d='" (:bounding-box-path-data txt) "' />\n"
-                                  "</svg>\n")))
-; will produce the image below:
+(let [txt (text "Roboto Black" "Hello, World!" 10 100 72)
+      svg (str "<svg width='450' height='150' xmlns='http://www.w3.org/2000/svg'>\n"
+               "<path fill='black' stroke='none' d='" (:path-data txt) "' />\n"
+               "<path fill='none' stroke='red' d='" (:bounding-box-path-data txt) "' />\n"
+               "</svg>\n")]
+  (spit "bounding-box.svg" svg)); will produce the image below:
 ```
 
 ![bounding-box.svg](bounding-box.png)

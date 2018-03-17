@@ -22,9 +22,10 @@
     (write-png svg "demo.png")))
 
 (deftest bounding-box-test
-  (let [txt (text "Roboto Black" "Hello, World!" 10 100 72)]
-    (spit "bounding-box.svg" (str "<svg width='450' height='150' xmlns='http://www.w3.org/2000/svg'>\n"
-                                  "<path fill='black' stroke='none' d='" (:path-data txt) "' />\n"
-                                  "<path fill='none' stroke='red' d='" (:bounding-box-path-data txt) "' />\n"
-                                  "</svg>\n")))
+  (let [txt (text "Roboto Black" "Hello, World!" 10 100 72)
+        svg (str "<svg width='450' height='150' xmlns='http://www.w3.org/2000/svg'>\n"
+                 "<path fill='black' stroke='none' d='" (:path-data txt) "' />\n"
+                 "<path fill='none' stroke='red' d='" (:bounding-box-path-data txt) "' />\n"
+                 "</svg>\n")]
+    (spit "bounding-box.svg" svg))
   (write-png (slurp "bounding-box.svg") "bounding-box.png"))

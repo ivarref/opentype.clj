@@ -2,7 +2,6 @@
   (:require [clojure.java.io :as io]
             [opentype-clj.thread :refer [same-thread]]
             [opentype-clj.utils :refer [filepath->stream]]
-            [base64-clj.core :as base64]
             [opentype-clj.utils :as utils])
   (:import [java.io File]
            [org.mozilla.javascript Context NativeObject ScriptableObject InterpretedFunction]))
@@ -58,9 +57,7 @@
   (same-thread
     (fn []
       (when (some? stream)
-        (let [font-b64 (-> (utils/stream->byte-array stream)
-                           (base64/encode-bytes)
-                           (String.))
+        (let [font-b64 (utils/stream->base-64-string stream)
               ^ScriptableObject font (.call (:parsefont rhino) (:context rhino) (:scope rhino) (:scope rhino) (object-array [font-b64]))
               names (NativeObject/getProperty font "names")
               fullnames (vals (get names "fullName"))]

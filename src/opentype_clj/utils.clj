@@ -1,7 +1,8 @@
 (ns opentype-clj.utils
   (:require [clojure.java.io :as io])
   (:import [clojure.lang RT]
-           [java.io BufferedInputStream ByteArrayOutputStream]))
+           [java.io BufferedInputStream ByteArrayOutputStream]
+           [java.util Base64]))
 
 (defn filepath->stream
   "Returns a buffered stream of filepath, either using classpath or file from disk.
@@ -14,8 +15,12 @@
                     (io/input-stream file))))
             (BufferedInputStream.))))
 
-(defn stream->byte-array
+(defn ^"[B" stream->byte-array
   [stream]
   (let [baos (ByteArrayOutputStream.)]
     (io/copy stream baos)
     (.toByteArray baos)))
+
+(defn stream->base-64-string
+  [stream]
+  (String. (.encode (Base64/getEncoder) (stream->byte-array stream))))

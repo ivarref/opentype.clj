@@ -3,7 +3,7 @@
             [opentype-clj.thread :refer [same-thread]]
             [opentype-clj.utils :refer [filepath->stream]]
             [base64-clj.core :as base64]
-            [byte-streams :as bs])
+            [opentype-clj.utils :as utils])
   (:import [java.io File]
            [org.mozilla.javascript Context NativeObject ScriptableObject InterpretedFunction]))
 
@@ -58,8 +58,7 @@
   (same-thread
     (fn []
       (when (some? stream)
-        (let [font-b64 (-> stream
-                           (bs/to-byte-array)
+        (let [font-b64 (-> (utils/stream->byte-array stream)
                            (base64/encode-bytes)
                            (String.))
               ^ScriptableObject font (.call (:parsefont rhino) (:context rhino) (:scope rhino) (:scope rhino) (object-array [font-b64]))

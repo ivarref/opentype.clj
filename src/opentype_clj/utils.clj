@@ -1,7 +1,7 @@
 (ns opentype-clj.utils
   (:require [clojure.java.io :as io])
   (:import [clojure.lang RT]
-           [java.io BufferedInputStream]))
+           [java.io BufferedInputStream ByteArrayOutputStream]))
 
 (defn filepath->stream
   "Returns a buffered stream of filepath, either using classpath or file from disk.
@@ -13,3 +13,9 @@
                   (when (.exists file)
                     (io/input-stream file))))
             (BufferedInputStream.))))
+
+(defn stream->byte-array
+  [stream]
+  (let [baos (ByteArrayOutputStream.)]
+    (io/copy stream baos)
+    (.toByteArray baos)))

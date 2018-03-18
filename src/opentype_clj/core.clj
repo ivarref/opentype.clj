@@ -19,8 +19,8 @@
   Parameters:
   font-name: The font to use.
   txt: The text to use.
-  x: X position. Default: 0.
-  y: Y position, baseline. Default: 0.
+  x: Horizontal position of the beginning of the text. Default: 0.
+  y: Vertical position of the baseline of the text. Default: 0.
   font-size: Size of font. Default: 72.
   decimals: Numbers of decimals to use in path data. Default: 2."
   ([font-name txt] (text font-name txt 0 0 72 2))

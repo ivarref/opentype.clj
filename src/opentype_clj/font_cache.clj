@@ -7,13 +7,13 @@
   [font-name]
   (map #(str font-name %) [".ttf" ".woff" ".otf"]))
 
-(defn font-name->candidate-resources
+(defn font-name->resource-candidates
   "Returns the candidate resource names for font name"
   [font-name]
   (->> (flatten [font-name
                  (suffixes font-name)
                  (suffixes (str "fonts/" font-name))
-                 (when (str/includes? font-name " ") (font-name->candidate-resources (str/replace font-name " " "-")))])
+                 (when (str/includes? font-name " ") (font-name->resource-candidates (str/replace font-name " " "-")))])
        (remove nil?)
        (vec)))
 
@@ -24,7 +24,7 @@
                                     (.close stream)
                                     candidate)))
           nil
-          (font-name->candidate-resources font-name)))
+          (font-name->resource-candidates font-name)))
 
 (def ^:dynamic *print-warning* true)
 

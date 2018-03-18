@@ -5,7 +5,6 @@
 
 (defrecord Font [name resource units-per-em ascender descender font-obj])
 (defrecord Glyph [name font unicode unicodes index advance-width x-min y-min x-max y-max path glyph-obj])
-(defrecord BoundingBox [x1 y1 x2 y2])
 
 (defn load-font
   "Loads the font given by `filepath`.
@@ -101,15 +100,13 @@
   (assert (fn? glyph-obj) "Missing glyph")
   (->> (same-thread #(call (glyph-obj) "getBoundingBox" []))
        (map (fn [[k v]] [(keyword k) v]))
-       (into {})
-       (map->BoundingBox)))
+       (into {})))
 
 (defn path->bounding-box
   [path]
   (->> (same-thread #(call path "getBoundingBox" []))
        (map (fn [[k v]] [(keyword k) v]))
-       (into {})
-       (map->BoundingBox)))
+       (into {})))
 
 (defn path->path-data
   ([path] (path->path-data path 2))

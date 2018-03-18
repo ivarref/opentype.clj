@@ -4,7 +4,7 @@ A simple API over [opentype.js](https://opentype.js.org/) for Clojure. Runs on t
 
 ## Installation
 
-Add `[opentype-clj "0.0.4"]` to your dependency vector.
+Add `[opentype-clj "0.0.5"]` to your dependency vector.
 
 ## Usage
 

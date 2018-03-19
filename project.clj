@@ -1,4 +1,4 @@
-(defproject opentype-clj "0.8.0.1-SNAPSHOT"
+(defproject opentype-clj "0.8.0.1"
   :description "Clojure (JVM) wrapper for opentype.js"
   :url "https://github.com/ivarref/opentype.clj"
   :license {:name "Eclipse Public License"

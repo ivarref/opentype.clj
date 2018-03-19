@@ -14,7 +14,7 @@
     (throw (ex-info "Could not find font-name" {:font-name font-name}))))
 
 (defn text
-  "Returns a map containing path-data, bounding-box and bounding-box-path-data.
+  "Returns a map containing path-data, bounding-box and advance-width.
 
   Parameters:
   font-name: The font to use.
@@ -33,14 +33,10 @@
    (let [font (font-name->font-or-throw font-name)
          path (wrapper/get-path font txt x y font-size)
          bounding-box (wrapper/path->bounding-box path)
-         fmt (fn [num] (format (str "%." decimals "f ") num))]
-     {:path-data    (wrapper/path->path-data path decimals)
-      :bounding-box bounding-box
-      :bounding-box-path-data (str "M" (fmt (:x1 bounding-box)) (fmt (:y1 bounding-box))
-                                   "H" (fmt (:x2 bounding-box))
-                                   "V" (fmt (:y2 bounding-box))
-                                   "H" (fmt (:x1 bounding-box))
-                                   "Z")})))
+         advance-width (wrapper/get-advance-width font txt font-size)]
+     {:path-data     (wrapper/path->path-data path decimals)
+      :bounding-box  bounding-box
+      :advance-width advance-width})))
 
 (defn text->path-data
   ([font-name txt] (text->path-data font-name txt 0 0 72 2))
@@ -56,9 +52,18 @@
   ([font-name txt x y font-size] (text->bounding-box font-name txt x y font-size 2))
   ([font-name txt x y font-size decimals] (:bounding-box (text font-name txt x y font-size decimals))))
 
-(defn text->bounding-box-path-data
-  ([font-name txt] (text->bounding-box-path-data font-name txt 0 0 72 2))
-  ([font-name txt x] (text->bounding-box-path-data font-name txt x 0 72 2))
-  ([font-name txt x y] (text->bounding-box-path-data font-name txt x y 72 2))
-  ([font-name txt x y font-size] (text->bounding-box-path-data font-name txt x y font-size 2))
-  ([font-name txt x y font-size decimals] (:bounding-box-path-data (text font-name txt x y font-size decimals))))
+(defn bounding-box->path-data
+  ([bounding-box] (bounding-box->path-data bounding-box 2))
+  ([{:keys [x1 x2 y1 y2]} decimals]
+   (assert (number? x1) ":x1 must be number")
+   (assert (number? x2) ":x2 must be number")
+   (assert (number? y1) ":y1 must be number")
+   (assert (number? y2) ":y2 must be number")
+   (assert (int? decimals) "decimals must be int")
+   (assert (or (zero? decimals) (pos-int? decimals)) "decimals must be greater or equal to zero")
+   (let [fmt (fn [num] (format (str "%." decimals "f ") num))]
+     (str "M" (fmt x1) (fmt y1)
+          "H" (fmt x2)
+          "V" (fmt y2)
+          "H" (fmt x1)
+          "Z"))))
